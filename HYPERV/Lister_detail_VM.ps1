@@ -47,5 +47,5 @@ $i=0
 ($c|%{
 $i=$i+1;
 Write-Progress -activity "$_" -status "Traité: $i sur $($c.Count)" -percentComplete (($i / $c.Count)*100)
-$_|select vmname,path,automatics*,@{name="Mémoire";expr={$_.MemoryAssigned/1024/1024}},@{name="Disks";expr={$_.harddrives.path}}, @{name="Taille";expr={$vm=$_; $vm.harddrives.path|%{((get-vhd -computername $vm.computername -path $_).size/1024/1024/1024).tostring()+ "Gb"}}},generation,processorcount,version,computername,@{name="Réseau";expr={$_.networkadapters|%{$_.name + " sur"+ $_.switchname}}},@{name="IP";expr={$_.networkadapters|%{$_.ipaddresses}}}})|ConvertTo-Html -CssUri "$dir\css.Css" |Out-File "$dir\VMList.html"
+$_|select vmname,path,automatics*,@{name="Mémoire";expr={$_.MemoryAssigned/1024/1024}},@{name="Disks";expr={$_.harddrives.path}}, @{name="Taille";expr={$vm=$_; $vm.harddrives.path|%{((get-vhd -computername $vm.computername -path $_).size/1024/1024/1024).tostring()+ "Gb"}}},generation,processorcount,version,computername,@{name="Réseau";expr={$_.networkadapters|%{$_.name + " sur"+ $_.switchname}}},@{name="IP";expr={$_.networkadapters|%{$_.ipaddresses}}},@{name="AdressesMac";expr={$_.networkadapters|%{$_.macaddress}}}})|ConvertTo-Html -CssUri "$dir\css.Css" |Out-File "$dir\VMList.html"
 "$dir\VMList.html"
