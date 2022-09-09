@@ -1,0 +1,11 @@
+$daystocheck=4;
+$a=new-object -TypeName psobject;
+$a |Add-Member -Type NoteProperty -Name "Name" -value "Aucun job de replication ces $($daystocheck) derniers jours";
+$a|Add-Member -Type NoteProperty -Name "Result" -value "Aucune information";
+import-module "C:\Program Files\Veeam\Backup and Replication\Console\Veeam.Backup.PowerShell\veeam.backup.powershell.psd1" -erroraction silentlycontinue -warningaction silentlycontinue;
+(get-vbrjob|?{$_.isbackupsync}).name|%{
+    $jobname=$_;
+    $d= Get-VBRBackupSession -name "$jobname*";
+    $limite=[system.datetime]::now.date.AddDays(-$daystocheck);
+    $jobs=($d |?{$_.EndTime -gt $limite -and $_.state -ne "Idle"}|sort -property endtime); if ($jobs.count -ge 1){$jobs|select @{n="Name";e={$_.Name+" $($_.endtime)"}},result}else{$a};
+}
